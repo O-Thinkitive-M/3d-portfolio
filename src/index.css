@@ -1,0 +1,427 @@
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --neon-blue: #00d4ff;
+  --neon-purple: #8b5cf6;
+  --neon-green: #39ff14;
+  --neon-pink: #ff006e;
+  --bg: #020408;
+  --text: #e2e8f0;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* ── Canvas ── */
+.canvas-root {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+/* ── HUD ── */
+.hud {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  pointer-events: none;
+}
+
+/* Progress bar */
+.progress-bar {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple));
+  box-shadow: 0 0 10px var(--neon-blue);
+  transition: width 0.08s linear;
+}
+
+/* Scene tag (top-left) */
+.scene-tag {
+  position: absolute;
+  top: 18px;
+  left: 24px;
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.35);
+}
+
+.scene-tag em {
+  color: var(--neon-blue);
+  font-style: normal;
+}
+
+/* Nav dots (right edge) */
+.nav-dots {
+  position: absolute;
+  right: 22px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  pointer-events: auto;
+}
+
+.nav-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  cursor: pointer;
+  transition: all 0.25s ease;
+  position: relative;
+}
+
+.nav-dot::after {
+  content: attr(data-label);
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  white-space: nowrap;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  color: rgba(255, 255, 255, 0.5);
+  opacity: 0;
+  transition: opacity 0.2s;
+  pointer-events: none;
+}
+
+.nav-dot:hover::after {
+  opacity: 1;
+}
+
+.nav-dot.active {
+  background: var(--neon-blue);
+  box-shadow: 0 0 10px var(--neon-blue);
+  transform: scale(1.4);
+}
+
+.nav-dot:hover:not(.active) {
+  background: rgba(139, 92, 246, 0.7);
+  box-shadow: 0 0 6px var(--neon-purple);
+}
+
+/* Scroll hint */
+.scroll-hint {
+  position: absolute;
+  bottom: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  opacity: 1;
+  transition: opacity 0.5s ease;
+}
+
+.scroll-hint.hidden {
+  opacity: 0;
+}
+
+.scroll-hint span {
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.scroll-mouse {
+  width: 20px;
+  height: 32px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  border-radius: 10px;
+  position: relative;
+}
+
+.scroll-mouse::after {
+  content: '';
+  position: absolute;
+  top: 5px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 2px;
+  height: 6px;
+  background: var(--neon-blue);
+  border-radius: 1px;
+  animation: scrollDown 1.8s ease-in-out infinite;
+}
+
+@keyframes scrollDown {
+  0% {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-50%) translateY(14px);
+  }
+}
+
+/* CTA panel (bottom, last scene) */
+.cta-panel {
+  position: absolute;
+  bottom: 48px;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  pointer-events: auto;
+  opacity: 0;
+  transition: opacity 0.8s ease;
+}
+
+.cta-panel.visible {
+  opacity: 1;
+}
+
+.cta-panel h2 {
+  font-size: clamp(1.6rem, 3vw, 2.4rem);
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.02em;
+  margin-bottom: 6px;
+}
+
+.cta-panel p {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.5);
+  letter-spacing: 0.08em;
+  margin-bottom: 24px;
+}
+
+.cta-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.cta-btn {
+  padding: 11px 28px;
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  text-decoration: none;
+  color: var(--neon-blue);
+  border: 1px solid rgba(0, 212, 255, 0.4);
+  background: transparent;
+  font-family: inherit;
+}
+
+.cta-btn:hover {
+  background: rgba(0, 212, 255, 0.12);
+  box-shadow: 0 0 18px rgba(0, 212, 255, 0.25);
+}
+
+.cta-btn.primary {
+  background: rgba(0, 212, 255, 0.12);
+  border-color: var(--neon-blue);
+}
+
+/* ── Scene 1 hero title ── */
+.scene1-hero {
+  position: absolute;
+  top: 14%;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  width: min(860px, 90vw);
+  transition: opacity 0.15s linear;
+  z-index: 30;
+}
+
+.hero-title {
+  font-size: clamp(2rem, 5.5vw, 3.8rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.08;
+  margin-bottom: 0.55rem;
+  background: linear-gradient(
+    135deg,
+    #ffffff 0%,
+    #a8d8ff 35%,
+    #00d4ff 60%,
+    #8b5cf6 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  /* subtle text glow */
+  filter: drop-shadow(0 0 18px rgba(0, 212, 255, 0.35));
+}
+
+.hero-sub {
+  font-size: clamp(0.7rem, 1.4vw, 0.95rem);
+  font-weight: 400;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--neon-blue);
+  opacity: 0.85;
+}
+
+/* Loading screen */
+.loading {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 20px;
+  transition: opacity 0.8s ease 0.5s;
+}
+
+.loading.done {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.loading-ring {
+  width: 48px;
+  height: 48px;
+  border: 1.5px solid rgba(0, 212, 255, 0.15);
+  border-top-color: var(--neon-blue);
+  border-radius: 50%;
+  animation: spin 0.9s linear infinite;
+}
+
+.loading-text {
+  font-size: 10px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.35);
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Interaction button (inside 3D scene via Html) */
+.interact-btn {
+  padding: 8px 20px;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  border-radius: 3px;
+  cursor: pointer;
+  color: var(--neon-blue);
+  border: 1px solid rgba(0, 212, 255, 0.5);
+  background: rgba(2, 4, 8, 0.8);
+  font-family: inherit;
+  white-space: nowrap;
+  transition: all 0.2s ease;
+}
+
+.interact-btn:hover {
+  background: rgba(0, 212, 255, 0.15);
+  box-shadow: 0 0 12px rgba(0, 212, 255, 0.3);
+}
+
+/* ── Scene 2 Skill Panel (hover popup) ── */
+.skill-panel {
+  background: rgba(2, 4, 12, 0.96);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 12px;
+  padding: 18px 22px;
+  min-width: 260px;
+  max-width: 300px;
+  pointer-events: none;
+  backdrop-filter: blur(12px);
+  font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+}
+
+.skill-panel-title {
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.skill-panel-item {
+  margin-bottom: 11px;
+}
+
+.skill-panel-item:last-child {
+  margin-bottom: 0;
+}
+
+.skill-panel-name {
+  display: block;
+  font-size: 14px;
+  font-weight: 600;
+  color: #e2e8f0;
+  margin-bottom: 3px;
+}
+
+.skill-panel-sub {
+  display: block;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.48);
+  letter-spacing: 0.03em;
+  line-height: 1.4;
+}
+
+/* Tooltip */
+.tooltip-box {
+  background: rgba(2, 4, 8, 0.92);
+  border: 1px solid rgba(0, 212, 255, 0.4);
+  border-radius: 6px;
+  padding: 10px 14px;
+  font-size: 12px;
+  color: var(--text);
+  max-width: 180px;
+  pointer-events: none;
+  box-shadow: 0 0 24px rgba(0, 212, 255, 0.15);
+  white-space: normal;
+}
+
+.tooltip-box h4 {
+  color: var(--neon-blue);
+  font-size: 13px;
+  margin-bottom: 5px;
+}
+
+.tooltip-box p {
+  color: rgba(255, 255, 255, 0.65);
+  line-height: 1.5;
+}
