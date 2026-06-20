@@ -39,7 +39,6 @@ export default function Scene4MobileOverlay() {
     display: 'flex', alignItems: 'center', justifyContent: 'center',
     fontFamily: 'sans-serif', lineHeight: '1',
     WebkitTapHighlightColor: 'transparent',
-    border: `1px solid rgba(168,85,247,${disabled ? '0.18' : '0.60'})`,
   } as React.CSSProperties)
 
   return (
